@@ -146,7 +146,7 @@
 // Plain structures in C++ (without constructors) can be initialized with { }
 // This is called aggregate initialization (C++11 feature)
 #if defined(__cplusplus)
-    #define CLITERAL(type)      type
+    #define CLITERAL(type)      ray::type
 #else
     #define CLITERAL(type)      (type)
 #endif

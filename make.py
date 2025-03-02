@@ -22,10 +22,7 @@ SYSHEADER = \
   r"D:\Download\mingw64\lib\gcc\x86_64-w64-mingw32\13.2.0\include\c++\x86_64-w64-mingw32\bits\stdc++.h"
   
 # Configuration
-SUPPRESS_WARNINGS = [
-  "unused-label",
-  "missing-designated-field-initializers"
-]
+SUPPRESS_WARNINGS = []
 suppress = ' '.join(f"-Wno-{x}" for x in SUPPRESS_WARNINGS)
 
 INCLUDE_PATHS = [
@@ -33,6 +30,11 @@ INCLUDE_PATHS = [
   "external/raylib/include"
 ]
 include = ' '.join(f"-I{x}" for x in INCLUDE_PATHS)
+
+LIB_PATHS = [
+  "external/raylib/lib"
+]
+lib = ' '.join(f"-L{x}" for x in LIB_PATHS)
  
 SRC_DIR = "src"
 BUILD_DIR = "build"
@@ -157,11 +159,14 @@ if args.precompile and not os.path.exists(STDCPP_PATH):
 
 if recompile or not os.path.exists(EXECUTABLE):
   print("\nLinking...")
-  subprocess.run(f"{CXX} {CXXFLAGS} -o {EXECUTABLE} {' '.join(object_files)}", shell=True, check=True)
+  subprocess.run(
+    f"{CXX} {CXXFLAGS} {lib} -o {EXECUTABLE} {' '.join(object_files)} -lraylib -lopengl32 -lgdi32 -lwinmm",
+  shell=True, check=True)
 
 linebreak = "\n" if not recompile else ""
 print(f"{linebreak}Build complete.")
 
 gdb = "gdb --args" if args.gdb else ""
 if args.run:
-  subprocess.run(f"{gdb} {EXECUTABLE}", shell=True)
+  # Powershell only supports blackslashs to invoke executable.
+  subprocess.run(f"{gdb} {os.path.relpath(EXECUTABLE)}.exe", shell=True)
